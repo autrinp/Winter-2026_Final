@@ -40,3 +40,38 @@ d\.
 -   River/tide height(continuous variable) could affect flooded wetland area. Higher water levels means nothing is stopping the water from flooding the nearby areas. Management factors may play a role in this as they may control how much water is allowed in during high tide seasons.
 
 # Problem 2
+
+a\.
+
+```{r}
+#| label: Cleaning and Summarizing data
+#| warning: false
+kelp_clean <- kelp |> 
+  clean_names() |> 
+  filter(site%in% c("IVEE", "NAPL", "CARP" )) |> 
+  mutate(site_name = case_when(
+    site == "NAPL" ~ "Naples",
+  site == "IVEE" ~ "Isla Vista",
+  site == "CARP" ~ "Carpinteria"
+  )) |> 
+  filter(!(date == "2000-09-22" & transect == "6" & quad == "40")) |> 
+   group_by(site_name, year) |> 
+  summarize(mean_fronds = mean(fronds)) |> 
+  ungroup() |> 
+ mutate(site_name = as_factor(site_name),
+       site_name = fct_relevel(site_name,
+                               "Naples", "Isla Vista", "Carpinteria"))
+  
+
+  
+```
+
+```{r}
+kelp_clean |> 
+  slice_sample(n = 5)
+```
+
+```{r}
+kelp_clean |> 
+  str()
+```
