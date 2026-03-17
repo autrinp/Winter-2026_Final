@@ -15,6 +15,7 @@ library(tidyverse)
 library(janitor)
 library(readr)
 kelp <- read_csv("../Data/Annual_Kelp_All_Years_20250903.csv")
+mopl <- read_csv("../Data/MOPL_nest-site_selection_Duchardt_et_al._2019.csv")
 ```
 
 # Problem 1
@@ -94,7 +95,7 @@ ggplot(data = kelp_clean, #creating plot from data set "kelp_clean"
   scale_color_manual(
     values = c("Naples" = "turquoise", #color Naples points
                "Isla Vista" = "tan", #color Isla Vista points
-               "Carpenteria" = "darkblue" #color carpenteria points
+               "Carpinteria" = "darkblue" #color carpenteria points
                )) +
   labs(x = "Year", #rename x-axis
        y = "Mean kelpfFronds per year", #rename y-axis
@@ -108,3 +109,11 @@ ggplot(data = kelp_clean, #creating plot from data set "kelp_clean"
   
   
 ```
+
+d\.
+
+-   Isla vista looks like it has the the the highest and lowest peaks and most variability between each peak
+
+-   Carpinteria has the flattest set of data showing less variability.
+
+# Problem 3
