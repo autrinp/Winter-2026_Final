@@ -46,20 +46,20 @@ a\.
 ```{r}
 #| label: Cleaning and Summarizing data
 #| warning: false
-kelp_clean <- kelp |> 
-  clean_names() |> 
-  filter(site%in% c("IVEE", "NAPL", "CARP" )) |> 
-  mutate(site_name = case_when(
-    site == "NAPL" ~ "Naples",
-  site == "IVEE" ~ "Isla Vista",
-  site == "CARP" ~ "Carpinteria"
+kelp_clean <- kelp |> #creating new data set from "kelp"
+  clean_names() |> #clean names to be all lower case with _
+  filter(site%in% c("IVEE", "NAPL", "CARP" )) |> #filter to only include "IVEE", "NAPL", and "CARP"
+  mutate(site_name = case_when( #mutate the existing site_name column
+    site == "NAPL" ~ "Naples", #Fill in "Naples" when "NAPL" appears
+  site == "IVEE" ~ "Isla Vista", #Fill in "Isla Vista" when IVEE appears
+  site == "CARP" ~ "Carpinteria" #Fill in "Carpenteria" when "CARP" appears
   )) |> 
-  filter(!(date == "2000-09-22" & transect == "6" & quad == "40")) |> 
-   group_by(site_name, year) |> 
-  summarize(mean_fronds = mean(fronds)) |> 
-  ungroup() |> 
- mutate(site_name = as_factor(site_name),
-       site_name = fct_relevel(site_name,
+  filter(!(date == "2000-09-22" & transect == "6" & quad == "40")) |>  #negating this row of data 
+   group_by(site_name, year) |> #group by site name and year
+  summarize(mean_fronds = mean(fronds)) |> # calculate the mean
+  ungroup() |> #ungroup the data
+ mutate(site_name = as_factor(site_name), #makes the categorical variable into a factor so it can be used in models
+       site_name = fct_relevel(site_name, #relevel gives order 
                                "Naples", "Isla Vista", "Carpinteria"))
   
 
@@ -67,11 +67,13 @@ kelp_clean <- kelp |>
 ```
 
 ```{r}
-kelp_clean |> 
-  slice_sample(n = 5)
+#| label: Slicing data
+#| message: false
+kelp_clean |> # pulling from "kelp_clean" data
+  slice_sample(n = 5) #pulling 5 random data points
 ```
 
 ```{r}
-kelp_clean |> 
-  str()
+kelp_clean |> #pulling from data
+  str() #showing structureed data
 ```
