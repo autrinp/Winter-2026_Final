@@ -19,6 +19,20 @@ library(janitor)
 
 a\.
 
--   In part 1 they used linear regression technique as there was a predictor variable(precipitation) and a response variable(flooded wetland area. Also it doesn't predict a relationship showing there's a relationship between the two variables
+-   In part 1 they used simple linear regression technique as there was a predictor variable(precipitation) and a response variable(flooded wetland area. Also it doesn't predict a relationship showing there's a relationship between the two variables
 
--   In part 2
+-   In part 2 they used a non-parametric test as it looks to measure the "median" flooded wetland area. When measuring 5 predictor variables, they used a Kruskal-Wallis rank sum test.
+
+b\.
+
+-   Measuring the median values, a box plot would be the most appropriate for part 2. The x-axis would have the water year classifications and the y-axis would have the response variable(flooded wetland area). Each group would be represented by a box with a middle line(the median), whiskers to emphasize the range of the data, and the IQR which shows the spread of the data.
+
+c\.
+
+-   Part 1: Precipitation doesn't predict flooded wetland area in the San Joaquin River Delta (linear regression, F(df of model) = f statistic value, R\^2 = determination, p = 0.11, 𝛂 = significance level).
+
+-   Part 2: We found no difference in median flooded wetland area across different water year classification (wet, above normal, below normal, dry, critical drought)(Kruskal_Wallis test, X²(distribution)(df) = test statistic value, p = 0.12, 𝛂 = significance level)
+
+d\.
+
+-   River/tide height(continuous variable) could affect flooded wetland area. Higher water levels means nothing is stopping the water from flooding the nearby areas. Management factors may play a role in this as they may control how much water is allowed in during high tide seasons.
