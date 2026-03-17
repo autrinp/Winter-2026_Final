@@ -77,3 +77,34 @@ kelp_clean |> # pulling from "kelp_clean" data
 kelp_clean |> #pulling from data
   str() #showing structureed data
 ```
+
+b\.
+
+This data set was deleted because it was -99999 which indicates missing or not needed data points. Found in "methods" tab of data page.
+
+c\.
+
+```{r}
+ggplot(data = kelp_clean, #creating plot from data set "kelp_clean"
+       aes(x = year, #x-axis
+           y = mean_fronds, #y-axis
+           color = site_name)) + #color by site na,e
+  geom_point() + #add points for data
+  geom_line() + #connect poionts with a line
+  scale_color_manual(
+    values = c("Naples" = "turquoise", #color Naples points
+               "Isla Vista" = "tan", #color Isla Vista points
+               "Carpenteria" = "darkblue" #color carpenteria points
+               )) +
+  labs(x = "Year", #rename x-axis
+       y = "Mean kelpfFronds per year", #rename y-axis
+       title = "Sites vary in mean kelp fronds per year") + #add title
+  theme_minimal() + #change background to white
+  theme(
+  panel.border = element_blank(), #eliminate border
+  plot.title = element_text(hjust = 0.5), #center title
+  text = element_text(family = "Times New Roman")) #change font to times new roman
+  
+  
+  
+```
