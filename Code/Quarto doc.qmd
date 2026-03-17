@@ -7,3 +7,10 @@ editor: visual
 ---
 
 <https://github.com/autrinp/Winter-2026_Final>
+
+```{r}
+#| label: Loading in packages
+#| message: false
+library(tidyverse)
+library(janitor)
+```
