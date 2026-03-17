@@ -14,3 +14,11 @@ editor: visual
 library(tidyverse)
 library(janitor)
 ```
+
+# Problem 1
+
+a\.
+
+-   In part 1 they used linear regression technique as there was a predictor variable(precipitation) and a response variable(flooded wetland area. Also it doesn't predict a relationship showing there's a relationship between the two variables
+
+-   In part 2
