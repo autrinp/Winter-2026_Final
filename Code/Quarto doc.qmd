@@ -13,6 +13,8 @@ editor: visual
 #| message: false
 library(tidyverse)
 library(janitor)
+library(readr)
+kelp <- read_csv("../Data/Annual_Kelp_All_Years_20250903.csv")
 ```
 
 # Problem 1
@@ -36,3 +38,5 @@ c\.
 d\.
 
 -   River/tide height(continuous variable) could affect flooded wetland area. Higher water levels means nothing is stopping the water from flooding the nearby areas. Management factors may play a role in this as they may control how much water is allowed in during high tide seasons.
+
+# Problem 2
