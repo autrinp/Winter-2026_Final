@@ -14,6 +14,7 @@ editor: visual
 library(tidyverse)
 library(janitor)
 library(readr)
+library(DHARMa)
 kelp <- read_csv("../Data/Annual_Kelp_All_Years_20250903.csv")
 mopl <- read_csv("../Data/MOPL_nest-site_selection_Duchardt_et_al._2019.csv")
 ```
@@ -144,24 +145,45 @@ mopl_clean <- mopl |> # creating a new data setmopl_clean
 ```
 
 ```{r}
-mode_null <- lm(used_bin ~ 1,
-             data = mopl_clean)
+mod_null <- glm(used_bin ~ 1, #making new object "mod_null", has no predictors
+             data = mopl_clean, # data
+             family = binomial) #error distribution
 
 ```
 
 ```{r}
-mod_sat <- lm(used_bin ~ edgedist + vo_nest, # making new object mod_sat, both edgedist and vo as predictors
-               data = mopl_clean) # pulling from data set
+mod_sat <- glm(used_bin ~ edgedist + vo_nest, # making new object mod_sat, both edgedist and vo as predictors
+               data = mopl_clean, # data
+              family = binomial) #error distribution
 ```
 
 ```{r}
-mod_edgdist <- lm(used_bin ~ edgedist, # making new object mod_edge, edgedist as predictor
-                data = mopl_clean)# data
+mod_edgdist <- glm(used_bin ~ edgedist, # making new object mod_edge, edgedist as predictor
+                data = mopl_clean,# data
+                family = binomial) #error distribution
 ```
 
 ```{r}
-mod_vo <- lm(used_bin ~ vo_nest, # making new object mod_vo, vo as predictor
-              data = mopl_clean) # data
+mod_vo <- glm(used_bin ~ vo_nest, # making new object mod_vo, vo as predictor
+              data = mopl_clean,# data
+             family = binomial) #error distribution
+```
+
+e\.
+
+```{r}
+AIC(mod_sat,
+    mod_null,
+    mod_vo,
+    mod_edgdist) # calculate the AIC for each model
+```
+
+The best model as determined by Akaike’s Information Criterion (AIC) is mod_vo for obstruction of visualization(AIC = 363.4420).
+
+f\.
+
+```{r}
+plot(simulateResiduals(mod_vo)) # diagnostic plot
 ```
 
 # Problem 4
