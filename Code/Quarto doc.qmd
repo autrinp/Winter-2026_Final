@@ -15,6 +15,7 @@ library(tidyverse)
 library(janitor)
 library(readr)
 library(DHARMa)
+library(ggeffects)
 kelp <- read_csv("../Data/Annual_Kelp_All_Years_20250903.csv")
 mopl <- read_csv("../Data/MOPL_nest-site_selection_Duchardt_et_al._2019.csv")
 ```
@@ -185,6 +186,42 @@ f\.
 ```{r}
 plot(simulateResiduals(mod_vo)) # diagnostic plot
 ```
+
+g\.
+
+```{r}
+mod_preds <- ggpredict(mod_vo,
+                       terms = "vo_nest[all]") # predicted probabilites
+ggplot(mopl_clean, # using mopl_clean data frame
+       aes(x = vo_nest, # set x-asix
+           y = used_bin, #set y-axis
+           color = "Observed")) + # colored data points
+  geom_point(aes(),
+             size = 3, 
+             alpha = 0.4) + # coloring data points)
+  geom_ribbon(data = mod_preds, # using mod_preds for ribbon data
+              aes(x = x, # same x-axis
+                  y = predicted, 
+                  ymin = conf.low,
+                  ymax = conf.high),
+              fill = "purple", # Setting color 
+              alpha = 0.4) + 
+  geom_line(data = mod_preds, # using mod_preds data for line
+            aes(x = x, #same x-axis
+                y = predicted,
+                color = "Model"), # coloring the line and setting width
+            linewidth = 1) +
+  labs(x = "Nest visual obstruction (cm)",  # x-axis name
+  y = "Probability of nest occupancy") + #y-axis name
+  scale_y_continuous(limits = c(0, 1), # setting y-axis scale
+                     breaks = c(0, 1)) + 
+  scale_color_manual(values = c("Observed" = "tan", # manually coiloring the line and data points
+                                "Model" = "darkgreen")) +
+  theme_minimal() + # changing background white
+theme(panel.grid = element_blank())  # removing gridlines
+```
+
+h\.
 
 # Problem 4
 
