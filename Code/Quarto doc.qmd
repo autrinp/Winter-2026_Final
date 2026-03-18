@@ -302,3 +302,9 @@ ggplot(My_data_clean, # Using my clean data
   theme_minimal() + # setting the theme
 theme(panel.grid = element_blank()) # removing gridlines
 ```
+
+e\. **Figure 2:** The probability of wearing flip flops seems to decrease as biking time(mins) increases. Biking time(in mins) is displayed on the x-axis and probability of wearing flip flops is displayed on y-axis. The dark green line shows the probability of wearing flip flops with the purple shaded showing the 95% confidence interval. The tan points represent the observed data of biking time
+
+f\. The chances of wearing flip flops seemed to very low when time on the bike was longer. This is saying that I was riding my bike faster when I was wearing flip flops.
+
+g\. I shared my visualization with the class
