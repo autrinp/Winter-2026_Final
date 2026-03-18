@@ -78,6 +78,7 @@ kelp_clean |> # pulling from "kelp_clean" data
 ```
 
 ```{r}
+#| message: false
 kelp_clean |> #pulling from data
   str() #showing structureed data
 ```
@@ -89,6 +90,7 @@ This data set was deleted because it was -99999 which indicates missing or not n
 c\.
 
 ```{r}
+#| message: false
 ggplot(data = kelp_clean, #creating plot from data set "kelp_clean"
        aes(x = year, #x-axis
            y = mean_fronds, #y-axis
@@ -140,6 +142,7 @@ c\.
 d\.
 
 ```{r}
+#| message: false
 mopl_clean <- mopl |> # creating a new data setmopl_clean
   clean_names() |> # cleaning the names
   mutate(used_bin = ifelse(id == "used",1, 0)) |> # making a new column to show 1 if nest is used and 0 if nest isnt used
@@ -147,6 +150,7 @@ mopl_clean <- mopl |> # creating a new data setmopl_clean
 ```
 
 ```{r}
+#| message: false
 mod_null <- glm(used_bin ~ 1, #making new object "mod_null", has no predictors
              data = mopl_clean, # data
              family = binomial) #error distribution
@@ -154,18 +158,21 @@ mod_null <- glm(used_bin ~ 1, #making new object "mod_null", has no predictors
 ```
 
 ```{r}
+#| message: false
 mod_sat <- glm(used_bin ~ edgedist + vo_nest, # making new object mod_sat, both edgedist and vo as predictors
                data = mopl_clean, # data
               family = binomial) #error distribution
 ```
 
 ```{r}
+#| message: false
 mod_edgdist <- glm(used_bin ~ edgedist, # making new object mod_edge, edgedist as predictor
                 data = mopl_clean,# data
                 family = binomial) #error distribution
 ```
 
 ```{r}
+#| message: false
 mod_vo <- glm(used_bin ~ vo_nest, # making new object mod_vo, vo as predictor
               data = mopl_clean,# data
              family = binomial) #error distribution
@@ -174,6 +181,7 @@ mod_vo <- glm(used_bin ~ vo_nest, # making new object mod_vo, vo as predictor
 e\.
 
 ```{r}
+#| message: false
 AIC(mod_sat,
     mod_null,
     mod_vo,
@@ -185,12 +193,14 @@ The best model as determined by Akaike’s Information Criterion (AIC) is mod_vo
 f\.
 
 ```{r}
+#| message: false
 plot(simulateResiduals(mod_vo)) # diagnostic plot
 ```
 
 g\.
 
 ```{r}
+#| message: false
 mod_preds <- ggpredict(mod_vo,
                        terms = "vo_nest[all]") # predicted probabilites
 ggplot(mopl_clean, # using mopl_clean data frame
@@ -227,6 +237,7 @@ h\. **Figure 1:** There's a clear decrease in nest occupation related to visual 
 i\.
 
 ```{r}
+#| message: false
 ggpredict(mod_vo, # using visual obstruction model
           terms = "vo_nest [0]") # visual obstruction = 0
 ```
@@ -248,6 +259,7 @@ b\. Whether or not biking time is affected by wearing flip flops(yes/no) I would
 c\.
 
 ```{r}
+#| message: false
 My_data_clean <- my_data[-1,] |> # creating new data set 
   clean_names() |> # cleaning the names
   mutate(flips_bin = ifelse(wearing_flips == "Yes", 1, 0))|> # making a new column that displays 1 if wearing flips and 0 if not
@@ -255,23 +267,27 @@ My_data_clean <- my_data[-1,] |> # creating new data set
 ```
 
 ```{r}
+#| message: false
 my_mod <- glm(flips_bin ~ biking_time_mins, # creating a glm, ocean_bin as a function of workload
                     data = My_data_clean, # data
                     family = "binomial") 
 ```
 
 ```{r}
+#| message: false
 plot(simulateResiduals(my_mod) # using DHARMa to plot residuals
 )
 ```
 
 ```{r}
+#| message: false
 summary(my_mod)
 ```
 
 d\.
 
 ```{r}
+#| message: false
 my_pred <- ggpredict(my_mod,
                        terms = "biking_time_mins") # predicted probabilites
 
