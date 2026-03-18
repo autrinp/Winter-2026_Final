@@ -18,6 +18,7 @@ library(DHARMa)
 library(ggeffects)
 kelp <- read_csv("../Data/Annual_Kelp_All_Years_20250903.csv")
 mopl <- read_csv("../Data/MOPL_nest-site_selection_Duchardt_et_al._2019.csv")
+my_data <- read_csv("../Data/my_data - autrin 2.csv")
 ```
 
 # Problem 1
@@ -236,6 +237,16 @@ j\. Visual obstruction was the best model when predicting nest occupation by Mou
 
 a\.
 
--   The data from HW 3 contains a ton more data points, HW 2 only has 4 points of datawhile HW 3 has 30 observations. HW 3 has colored points for the predictor variables( green = no flip flops, red = flip flops) and is a lot cleaner and organized.
+My affective visualization shows whether wearing flip flops on affects my biking time to class. I made every data point the wheel of a bike, and made the bike get larger the higher the time got. I added a shoe and flipflop to the seat of the corresponding variable on the plot. My exploratory data from HW 2 is just a simple jittered plot with showing wearing flip flops(yes/no) on the x-axis and biking time(mins) on the y-axis. They were both similair in the way that I still displayed the x and y axis on my affective visualizations and it showed. the same spread.
 
--   Both are jittered plots with the response varibale on the y axis(biking time and sleeping time).
+The main pattern was that there was no immediate affect that flip flops had on biking time. Biking time varied throughout the plot mostly due to different factors, such as weather, and whether I was late to class or not.)
+
+The best feedback I got was that it was it was cool to see how flip flops don't affect biking time.
+
+b\. Whether or not biking time is affected by wearing flip flpps(yes/no) I would use a linear regression model as predictor variable(wearing flip flops) is a binary categorical data point. This would allow me to see the affect wearing flip flops has on biking time
+
+c\.
+
+```{r}
+
+```
