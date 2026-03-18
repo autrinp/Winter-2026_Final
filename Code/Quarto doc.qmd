@@ -117,3 +117,57 @@ d\.
 -   Carpinteria has the flattest set of data showing less variability.
 
 # Problem 3
+
+a\. The 1's and 0's represent whether a nest site is being used by the Mountain Plover or not. 1's indicate a used site and 0's indicate an available site.
+
+b\. Visual obstruction(continuous) - "selected model indicated that plovers avoided nesting in areas with a maximum vegetation height \>11 cm, corresponding with an average visual obstruction of \>5 cm."(Discussion, paragraph 4). As height of the vegetation increases(increasing visual obstruction) thsi decreases the chance of a plover to nest there as they prefer open areas.
+
+Distance to prairie dog colony(continuous) - "this is the first direct evidence that colony size may negatively influence plover density"(Discussion, paragraph 2). As distance to colony edge increases(colony size), the probability of Mountain Plover nest site use would decrease.
+
+c\.
+
+|  |  |  |  |  |  |  |
+|--------------|------|---------------|------|--------------|------|-------------|
+| **Model Name** |  | **Visual Onbstruction** |  | **Distance to praire colony** |  | **Model Description** |
+| mod_null |  |  |  |  |  | No predictor(fmodel) |
+| Mod_sat |  | X |  | X |  | All predictors(model |
+| Mod_Edgedist |  |  |  | X |  | Distance only |
+| Mod_vo |  | X |  |  |  | Visual Only |
+
+d\.
+
+```{r}
+mopl_clean <- mopl |> # creating a new data setmopl_clean
+  clean_names() |> # cleaning the names
+  mutate(used_bin = ifelse(id == "used",1, 0)) |> # making a new column to show 1 if nest is used and 0 if nest isnt used
+  select(used_bin, edgedist, vo_nest) #selecting bins to use
+```
+
+```{r}
+mode_null <- lm(used_bin ~ 1,
+             data = mopl_clean)
+
+```
+
+```{r}
+mod_sat <- lm(used_bin ~ edgedist + vo_nest, # making new object mod_sat, both edgedist and vo as predictors
+               data = mopl_clean) # pulling from data set
+```
+
+```{r}
+mod_edgdist <- lm(used_bin ~ edgedist, # making new object mod_edge, edgedist as predictor
+                data = mopl_clean)# data
+```
+
+```{r}
+mod_vo <- lm(used_bin ~ vo_nest, # making new object mod_vo, vo as predictor
+              data = mopl_clean) # data
+```
+
+# Problem 4
+
+a\.
+
+-   The data from HW 3 contains a ton more data points, HW 2 only has 4 points of datawhile HW 3 has 30 observations. HW 3 has colored points for the predictor variables( green = no flip flops, red = flip flops) and is a lot cleaner and organized.
+
+-   Both are jittered plots with the response varibale on the y axis(biking time and sleeping time).
