@@ -195,9 +195,9 @@ mod_preds <- ggpredict(mod_vo,
                        terms = "vo_nest[all]") # predicted probabilites
 ggplot(mopl_clean, # using mopl_clean data frame
        aes(x = vo_nest, # set x-asix
-           y = used_bin, #set y-axis
-           color = "Observed")) + # colored data points
-  geom_point(aes(),
+           y = used_bin #set y-axis
+           )) +
+  geom_point(aes(color = "Observed"),
              size = 3, 
              alpha = 0.4) + # coloring data points)
   geom_ribbon(data = mod_preds, # using mod_preds for ribbon data
@@ -237,16 +237,68 @@ j\. Visual obstruction was the best model when predicting nest occupation by Mou
 
 a\.
 
-My affective visualization shows whether wearing flip flops on affects my biking time to class. I made every data point the wheel of a bike, and made the bike get larger the higher the time got. I added a shoe and flipflop to the seat of the corresponding variable on the plot. My exploratory data from HW 2 is just a simple jittered plot with showing wearing flip flops(yes/no) on the x-axis and biking time(mins) on the y-axis. They were both similair in the way that I still displayed the x and y axis on my affective visualizations and it showed. the same spread.
+My affective visualization shows whether wearing flip flops on affects my biking time to class. I made every data point the wheel of a bike, and made the bike get larger the higher the time got. I added a shoe and flipflop to the seat of the corresponding variable on the plot. My exploratory data from HW 2 is just a simple jittered plot with showing wearing flip flops(yes/no) on the x-axis and biking time(mins) on the y-axis. They were both similar in the way that I still displayed the x and y axis on my affective visualizations and it showed. the same spread.
 
 The main pattern was that there was no immediate affect that flip flops had on biking time. Biking time varied throughout the plot mostly due to different factors, such as weather, and whether I was late to class or not.)
 
 The best feedback I got was that it was it was cool to see how flip flops don't affect biking time.
 
-b\. Whether or not biking time is affected by wearing flip flpps(yes/no) I would use a linear regression model as predictor variable(wearing flip flops) is a binary categorical data point. This would allow me to see the affect wearing flip flops has on biking time
+b\. Whether or not biking time is affected by wearing flip flops(yes/no) I would use a linear regression model as predictor variable(wearing flip flops) is a binary categorical data point. This would allow me to see the affect wearing flip flops has on biking time
 
 c\.
 
 ```{r}
+My_data_clean <- my_data[-1,] |> # creating new data set 
+  clean_names() |> # cleaning the names
+  mutate(flips_bin = ifelse(wearing_flips == "Yes", 1, 0))|> # making a new column that displays 1 if wearing flips and 0 if not
+  select(flips_bin, biking_time_mins) #selecting only binary response and predictor
+```
 
+```{r}
+my_mod <- glm(flips_bin ~ biking_time_mins, # creating a glm, ocean_bin as a function of workload
+                    data = My_data_clean, # data
+                    family = "binomial") 
+```
+
+```{r}
+plot(simulateResiduals(my_mod) # using DHARMa to plot residuals
+)
+```
+
+```{r}
+summary(my_mod)
+```
+
+d\.
+
+```{r}
+my_pred <- ggpredict(my_mod,
+                       terms = "biking_time_mins") # predicted probabilites
+
+ggplot(My_data_clean, # Using my clean data
+       aes(x = biking_time_mins, # x-axis
+           y = flips_bin )) + # y-axis
+  geom_point(aes(color = "Observed"), # coloring data points
+             size = 3, # setting the size
+             alpha = 0.4)  + 
+  geom_ribbon(data = my_pred, # using ribbon data
+              aes(x = x, # same x-axis
+                  y = predicted, 
+                  ymin = conf.low,
+                  ymax = conf.high),
+              fill = "purple", # Setting color
+              alpha = 0.4) + 
+  geom_line(data = my_pred, # using data for line
+            aes(x = x, # same x-axis
+                y = predicted,
+                color = "Model"), # coloring the line and setting width
+            linewidth = 1) +
+  labs(x = "Biking Time(mins)",  # x-axis name
+  y = "Probability of Wearing Flip Flops") + # y-axis name
+  scale_y_continuous(limits = c(0, 1), 
+                     breaks = c(0, 1)) + 
+  scale_color_manual(values = c("Observed" = "tan", # manually coiloring the line and data points
+                                "Model" = "darkgreen")) +
+  theme_minimal() + # setting the theme
+theme(panel.grid = element_blank()) # removing gridlines
 ```
