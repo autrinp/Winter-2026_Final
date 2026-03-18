@@ -109,15 +109,381 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="https://github.com/autrinp/Winter-2026_Final" class="uri">https://github.com/autrinp/Winter-2026_Final</a></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>kelp <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../Data/Annual_Kelp_All_Years_20250903.csv"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>mopl <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../Data/MOPL_nest-site_selection_Duchardt_et_al._2019.csv"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../Data/my_data - autrin 2.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="problem-1" class="level1">
 <h1>Problem 1</h1>
 <p>a.</p>
 <ul>
-<li><p>In part 1 they used linear regression technique as there was a predictor variable(precipitation) and a response variable(flooded wetland area. Also it doesn’t predict a relationship showing there’s a relationship between the two variables</p></li>
-<li><p>In part 2</p></li>
+<li><p>In part 1 they used simple linear regression technique as there was a predictor variable(precipitation) and a response variable(flooded wetland area. Also it doesn’t predict a relationship showing there’s a relationship between the two variables</p></li>
+<li><p>In part 2 they used a non-parametric test as it looks to measure the “median” flooded wetland area. When measuring 5 predictor variables, they used a Kruskal-Wallis rank sum test.</p></li>
 </ul>
+<p>b.</p>
+<ul>
+<li>Measuring the median values, a box plot would be the most appropriate for part 2. The x-axis would have the water year classifications and the y-axis would have the response variable(flooded wetland area). Each group would be represented by a box with a middle line(the median), whiskers to emphasize the range of the data, and the IQR which shows the spread of the data.</li>
+</ul>
+<p>c.</p>
+<ul>
+<li><p>Part 1: Precipitation doesn’t predict flooded wetland area in the San Joaquin River Delta (linear regression, F(df of model) = f statistic value, R^2 = determination, p = 0.11, 𝛂 = significance level).</p></li>
+<li><p>Part 2: We found no difference in median flooded wetland area across different water year classification (wet, above normal, below normal, dry, critical drought)(Kruskal_Wallis test, X²(distribution)(df) = test statistic value, p = 0.12, 𝛂 = significance level)</p></li>
+</ul>
+<p>d.</p>
+<ul>
+<li>River/tide height(continuous variable) could affect flooded wetland area. Higher water levels means nothing is stopping the water from flooding the nearby areas. Management factors may play a role in this as they may control how much water is allowed in during high tide seasons.</li>
+</ul>
+</section>
+<section id="problem-2" class="level1">
+<h1>Problem 2</h1>
+<p>a.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>kelp_clean <span class="ot">&lt;-</span> kelp <span class="sc">|&gt;</span> <span class="co">#creating new data set from "kelp"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> <span class="co">#clean names to be all lower case with _</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(site<span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"IVEE"</span>, <span class="st">"NAPL"</span>, <span class="st">"CARP"</span> )) <span class="sc">|&gt;</span> <span class="co">#filter to only include "IVEE", "NAPL", and "CARP"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">site_name =</span> <span class="fu">case_when</span>( <span class="co">#mutate the existing site_name column</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    site <span class="sc">==</span> <span class="st">"NAPL"</span> <span class="sc">~</span> <span class="st">"Naples"</span>, <span class="co">#Fill in "Naples" when "NAPL" appears</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  site <span class="sc">==</span> <span class="st">"IVEE"</span> <span class="sc">~</span> <span class="st">"Isla Vista"</span>, <span class="co">#Fill in "Isla Vista" when IVEE appears</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  site <span class="sc">==</span> <span class="st">"CARP"</span> <span class="sc">~</span> <span class="st">"Carpinteria"</span> <span class="co">#Fill in "Carpenteria" when "CARP" appears</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(date <span class="sc">==</span> <span class="st">"2000-09-22"</span> <span class="sc">&amp;</span> transect <span class="sc">==</span> <span class="st">"6"</span> <span class="sc">&amp;</span> quad <span class="sc">==</span> <span class="st">"40"</span>)) <span class="sc">|&gt;</span>  <span class="co">#negating this row of data </span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(site_name, year) <span class="sc">|&gt;</span> <span class="co">#group by site name and year</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_fronds =</span> <span class="fu">mean</span>(fronds)) <span class="sc">|&gt;</span> <span class="co"># calculate the mean</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> <span class="co">#ungroup the data</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a> <span class="fu">mutate</span>(<span class="at">site_name =</span> <span class="fu">as_factor</span>(site_name), <span class="co">#makes the categorical variable into a factor so it can be used in models</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">site_name =</span> <span class="fu">fct_relevel</span>(site_name, <span class="co">#relevel gives order </span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"Naples"</span>, <span class="st">"Isla Vista"</span>, <span class="st">"Carpinteria"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>kelp_clean <span class="sc">|&gt;</span> <span class="co"># pulling from "kelp_clean" data</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="co">#pulling 5 random data points</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  site_name    year mean_fronds
+  &lt;fct&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+1 Carpinteria  2022        9.52
+2 Isla Vista   2019       12.1 
+3 Naples       2021       10.5 
+4 Naples       2006        5.11
+5 Carpinteria  2016        4.97</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>kelp_clean <span class="sc">|&gt;</span> <span class="co">#pulling from data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>() <span class="co">#showing structureed data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [77 × 3] (S3: tbl_df/tbl/data.frame)
+ $ site_name  : Factor w/ 3 levels "Naples","Isla Vista",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ year       : num [1:77] 2000 2001 2002 2003 2004 ...
+ $ mean_fronds: num [1:77] 7.98 4.42 9.79 5.27 3.67 ...</code></pre>
+</div>
+</div>
+<p>b.</p>
+<p>This data set was deleted because it was -99999 which indicates missing or not needed data points. Found in “methods” tab of data page.</p>
+<p>c.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> kelp_clean, <span class="co">#creating plot from data set "kelp_clean"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="co">#x-axis</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> mean_fronds, <span class="co">#y-axis</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> site_name)) <span class="sc">+</span> <span class="co">#color by site na,e</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="co">#add points for data</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="co">#connect poionts with a line</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Naples"</span> <span class="ot">=</span> <span class="st">"turquoise"</span>, <span class="co">#color Naples points</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Isla Vista"</span> <span class="ot">=</span> <span class="st">"tan"</span>, <span class="co">#color Isla Vista points</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Carpinteria"</span> <span class="ot">=</span> <span class="st">"darkblue"</span> <span class="co">#color carpenteria points</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               )) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, <span class="co">#rename x-axis</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Mean kelpfFronds per year"</span>, <span class="co">#rename y-axis</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Sites vary in mean kelp fronds per year"</span>) <span class="sc">+</span> <span class="co">#add title</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="co">#change background to white</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.border =</span> <span class="fu">element_blank</span>(), <span class="co">#eliminate border</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>), <span class="co">#center title</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Times New Roman"</span>)) <span class="co">#change font to times new roman</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Quarto-doc_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>d.</p>
+<ul>
+<li><p>Isla vista looks like it has the the the highest and lowest peaks and most variability between each peak</p></li>
+<li><p>Carpinteria has the flattest set of data showing less variability.</p></li>
+</ul>
+</section>
+<section id="problem-3" class="level1">
+<h1>Problem 3</h1>
+<p>a. The 1’s and 0’s represent whether a nest site is being used by the Mountain Plover or not. 1’s indicate a used site and 0’s indicate an available site.</p>
+<p>b. Visual obstruction(continuous) - “selected model indicated that plovers avoided nesting in areas with a maximum vegetation height &gt;11 cm, corresponding with an average visual obstruction of &gt;5 cm.”(Discussion, paragraph 4). As height of the vegetation increases(increasing visual obstruction) thsi decreases the chance of a plover to nest there as they prefer open areas.</p>
+<p>Distance to prairie dog colony(continuous) - “this is the first direct evidence that colony size may negatively influence plover density”(Discussion, paragraph 2). As distance to colony edge increases(colony size), the probability of Mountain Plover nest site use would decrease.</p>
+<p>c.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 8%">
+<col style="width: 20%">
+<col style="width: 8%">
+<col style="width: 18%">
+<col style="width: 8%">
+<col style="width: 17%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Model Name</strong></td>
+<td></td>
+<td><strong>Visual Onbstruction</strong></td>
+<td></td>
+<td><strong>Distance to praire colony</strong></td>
+<td></td>
+<td><strong>Model Description</strong></td>
+</tr>
+<tr class="even">
+<td>mod_null</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>No predictor(fmodel)</td>
+</tr>
+<tr class="odd">
+<td>Mod_sat</td>
+<td></td>
+<td>X</td>
+<td></td>
+<td>X</td>
+<td></td>
+<td>All predictors(model</td>
+</tr>
+<tr class="even">
+<td>Mod_Edgedist</td>
+<td></td>
+<td></td>
+<td></td>
+<td>X</td>
+<td></td>
+<td>Distance only</td>
+</tr>
+<tr class="odd">
+<td>Mod_vo</td>
+<td></td>
+<td>X</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Visual Only</td>
+</tr>
+</tbody>
+</table>
+<p>d.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mopl_clean <span class="ot">&lt;-</span> mopl <span class="sc">|&gt;</span> <span class="co"># creating a new data setmopl_clean</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> <span class="co"># cleaning the names</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">used_bin =</span> <span class="fu">ifelse</span>(id <span class="sc">==</span> <span class="st">"used"</span>,<span class="dv">1</span>, <span class="dv">0</span>)) <span class="sc">|&gt;</span> <span class="co"># making a new column to show 1 if nest is used and 0 if nest isnt used</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(used_bin, edgedist, vo_nest) <span class="co">#selecting bins to use</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mod_null <span class="ot">&lt;-</span> <span class="fu">glm</span>(used_bin <span class="sc">~</span> <span class="dv">1</span>, <span class="co">#making new object "mod_null", has no predictors</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> mopl_clean, <span class="co"># data</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> binomial) <span class="co">#error distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mod_sat <span class="ot">&lt;-</span> <span class="fu">glm</span>(used_bin <span class="sc">~</span> edgedist <span class="sc">+</span> vo_nest, <span class="co"># making new object mod_sat, both edgedist and vo as predictors</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> mopl_clean, <span class="co"># data</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> binomial) <span class="co">#error distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mod_edgdist <span class="ot">&lt;-</span> <span class="fu">glm</span>(used_bin <span class="sc">~</span> edgedist, <span class="co"># making new object mod_edge, edgedist as predictor</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> mopl_clean,<span class="co"># data</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> binomial) <span class="co">#error distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mod_vo <span class="ot">&lt;-</span> <span class="fu">glm</span>(used_bin <span class="sc">~</span> vo_nest, <span class="co"># making new object mod_vo, vo as predictor</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> mopl_clean,<span class="co"># data</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> binomial) <span class="co">#error distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>e.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mod_sat,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    mod_null,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    mod_vo,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    mod_edgdist) <span class="co"># calculate the AIC for each model</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            df      AIC
+mod_sat      3 333.7410
+mod_null     1 384.6172
+mod_vo       2 331.7690
+mod_edgdist  2 386.0911</code></pre>
+</div>
+</div>
+<p>The best model as determined by Akaike’s Information Criterion (AIC) is mod_vo for obstruction of visualization(AIC = 363.4420).</p>
+<p>f.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(mod_vo)) <span class="co"># diagnostic plot</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Quarto-doc_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>g.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mod_preds <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod_vo,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">terms =</span> <span class="st">"vo_nest[all]"</span>) <span class="co"># predicted probabilites</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mopl_clean, <span class="co"># using mopl_clean data frame</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> vo_nest, <span class="co"># set x-asix</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> used_bin <span class="co">#set y-axis</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>           )) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="st">"Observed"</span>),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>, </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> <span class="co"># coloring data points)</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> mod_preds, <span class="co"># using mod_preds for ribbon data</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="co"># same x-axis</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">y =</span> predicted, </span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ymin =</span> conf.low,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ymax =</span> conf.high),</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">"purple"</span>, <span class="co"># Setting color </span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> mod_preds, <span class="co"># using mod_preds data for line</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="co">#same x-axis</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> predicted,</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">color =</span> <span class="st">"Model"</span>), <span class="co"># coloring the line and setting width</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Nest visual obstruction (cm)"</span>,  <span class="co"># x-axis name</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="st">"Probability of nest occupancy"</span>) <span class="sc">+</span> <span class="co">#y-axis name</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="co"># setting y-axis scale</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Observed"</span> <span class="ot">=</span> <span class="st">"tan"</span>, <span class="co"># manually coiloring the line and data points</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Model"</span> <span class="ot">=</span> <span class="st">"darkgreen"</span>)) <span class="sc">+</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="co"># changing background white</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>())  <span class="co"># removing gridlines</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Quarto-doc_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>h. <strong>Figure 1:</strong> There’s a clear decrease in nest occupation related to visual obstruction(cm). Probability of nest occupation is on the y-axis and nest visual obstruction(in cm) is on the x-axis. The green line is the predicted probability and the purple shading is the confidence interval. The tan data points represent nest occupation. Data citation: Duchardt, Courtney; Beck, Jeffrey; Augustine, David (2020). Data from: Mountain Plover habitat selection and nest survival in relation to weather variability and spatial attributes of Black-tailed Prairie Dog disturbance [Dataset]. Dryad. https://doi.org/10.5061/dryad.ttdz08kt7.</p>
+<p>i.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpredict</span>(mod_vo, <span class="co"># using visual obstruction model</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">terms =</span> <span class="st">"vo_nest [0]"</span>) <span class="co"># visual obstruction = 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Predicted probabilities of used_bin
+
+vo_nest | Predicted |     95% CI
+--------------------------------
+      0 |      0.73 | 0.65, 0.80</code></pre>
+</div>
+</div>
+<p>j. Visual obstruction was the best model when predicting nest occupation by Mountain Plovers. Based on the predicted probabilities, nest occupation when there’s no visual obstruction is 73%(CI: 0.65,0.80). The plovers tend to select sights with open land and no predators in sight. Distance to prairie dog colony is correlated with visual obstruction as the prairie dogs destroy the vegetation creating short vegetation.</p>
+</section>
+<section id="problem-4" class="level1">
+<h1>Problem 4</h1>
+<p>a.</p>
+<p>My affective visualization shows whether wearing flip flops on affects my biking time to class. I made every data point the wheel of a bike, and made the bike get larger the higher the time got. I added a shoe and flipflop to the seat of the corresponding variable on the plot. My exploratory data from HW 2 is just a simple jittered plot with showing wearing flip flops(yes/no) on the x-axis and biking time(mins) on the y-axis. They were both similar in the way that I still displayed the x and y axis on my affective visualizations and it showed. the same spread.</p>
+<p>The main pattern was that there was no immediate affect that flip flops had on biking time. Biking time varied throughout the plot mostly due to different factors, such as weather, and whether I was late to class or not.)</p>
+<p>The best feedback I got was that it was it was cool to see how flip flops don’t affect biking time.</p>
+<p>b. Whether or not biking time is affected by wearing flip flops(yes/no) I would use a linear regression model as predictor variable(wearing flip flops) is a binary categorical data point. This would allow me to see the affect wearing flip flops has on biking time</p>
+<p>c.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>My_data_clean <span class="ot">&lt;-</span> my_data[<span class="sc">-</span><span class="dv">1</span>,] <span class="sc">|&gt;</span> <span class="co"># creating new data set </span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> <span class="co"># cleaning the names</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">flips_bin =</span> <span class="fu">ifelse</span>(wearing_flips <span class="sc">==</span> <span class="st">"Yes"</span>, <span class="dv">1</span>, <span class="dv">0</span>))<span class="sc">|&gt;</span> <span class="co"># making a new column that displays 1 if wearing flips and 0 if not</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(flips_bin, biking_time_mins) <span class="co">#selecting only binary response and predictor</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>my_mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(flips_bin <span class="sc">~</span> biking_time_mins, <span class="co"># creating a glm, ocean_bin as a function of workload</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> My_data_clean, <span class="co"># data</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family =</span> <span class="st">"binomial"</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(my_mod) <span class="co"># using DHARMa to plot residuals</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Quarto-doc_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(my_mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = flips_bin ~ biking_time_mins, family = "binomial", 
+    data = My_data_clean)
+
+Coefficients:
+                 Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)        2.6270     2.1685   1.211    0.226
+biking_time_mins  -0.4505     0.3577  -1.259    0.208
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 40.168  on 28  degrees of freedom
+Residual deviance: 38.425  on 27  degrees of freedom
+AIC: 42.425
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>d.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>my_pred <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(my_mod,</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">terms =</span> <span class="st">"biking_time_mins"</span>) <span class="co"># predicted probabilites</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(My_data_clean, <span class="co"># Using my clean data</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> biking_time_mins, <span class="co"># x-axis</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> flips_bin )) <span class="sc">+</span> <span class="co"># y-axis</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="st">"Observed"</span>), <span class="co"># coloring data points</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>, <span class="co"># setting the size</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.4</span>)  <span class="sc">+</span> </span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> my_pred, <span class="co"># using ribbon data</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="co"># same x-axis</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">y =</span> predicted, </span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ymin =</span> conf.low,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ymax =</span> conf.high),</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">"purple"</span>, <span class="co"># Setting color</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> my_pred, <span class="co"># using data for line</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="co"># same x-axis</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> predicted,</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">color =</span> <span class="st">"Model"</span>), <span class="co"># coloring the line and setting width</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Biking Time(mins)"</span>,  <span class="co"># x-axis name</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="st">"Probability of Wearing Flip Flops"</span>) <span class="sc">+</span> <span class="co"># y-axis name</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), </span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Observed"</span> <span class="ot">=</span> <span class="st">"tan"</span>, <span class="co"># manually coiloring the line and data points</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Model"</span> <span class="ot">=</span> <span class="st">"darkgreen"</span>)) <span class="sc">+</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="co"># setting the theme</span></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>()) <span class="co"># removing gridlines</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Quarto-doc_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>e. <strong>Figure 2:</strong> The probability of wearing flip flops seems to decrease as biking time(mins) increases. Biking time(in mins) is displayed on the x-axis and probability of wearing flip flops is displayed on y-axis. The dark green line shows the probability of wearing flip flops with the purple shaded showing the 95% confidence interval. The tan points represent the observed data of biking time</p>
+<p>f. The chances of wearing flip flops seemed to very low when time on the bike was longer. This is saying that I was riding my bike faster when I was wearing flip flops.</p>
+<p>g. I shared my visualization with the class</p>
 </section>
 
 </main>
